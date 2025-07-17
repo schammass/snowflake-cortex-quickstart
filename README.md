@@ -98,3 +98,113 @@ AS (
 - [Cortex Search Blog](https://www.snowflake.com/en/blog/cortex-search-ai-hybrid-search/)  
 
 ---
+
+
+# 🚀 Quickstart Guide: Snowflake Cortex AISQL
+
+This README walks you through the basics of using Snowflake’s Cortex AISQL functions to generate AI-powered text completions and perform simple sentiment filtering—all directly in SQL.
+
+---
+
+## 📦 Prerequisites
+
+Before you begin, make sure you have:
+
+- A Snowflake account with permission to:
+  - Create databases, schemas, and tables  
+  - Execute external/AISQL functions  
+- The built-in `SNOWFLAKE.CORTEX_USER` role granted to your user  
+- Access to a worksheet in Snowsight or any Snowflake SQL client  
+
+---
+
+## 🏗️ Setup
+
+1. Switch to your AI role  
+   ```sql
+   USE ROLE ACCOUNTADMIN;
+   ```
+
+2. Create a training database and schema  
+   ```sql
+   CREATE DATABASE IF NOT EXISTS AISQL_TRAINING;
+   USE SCHEMA AISQL_TRAINING.PUBLIC;
+   ```
+
+---
+
+## ✨ Example 1: Generate a Weather Report
+
+Use `AI_COMPLETE` to ask an AI model for a custom weather update.
+
+```sql
+SELECT AI_COMPLETE(
+  'claude-3-5-sonnet',
+  PROMPT(
+    'Write a weather report for Montréal, Québec on July 16, 2025. ' ||
+    'Include temperature, air quality, and forecast.'
+  ),
+  OBJECT_CONSTRUCT(
+    'temperature', 0.7,
+    'max_tokens', 200
+  )
+) AS weather_report;
+```
+
+---
+
+## ✨ Example 2: Sentiment Filtering of Reviews
+
+1. Create a simple `reviews` table and insert sample data  
+   ```sql
+   CREATE OR REPLACE TABLE reviews (text STRING);
+
+   INSERT INTO reviews VALUES
+     ('I love this product!'),
+     ('Terrible quality'),
+     ('Great value for money');
+   ```
+
+2. Filter for **satisfied** customers  
+   ```sql
+   SELECT text
+   FROM reviews
+   WHERE AI_FILTER(
+     PROMPT('In the following review, does the customer sound satisfied? {0}', text)
+   );
+   ```
+
+3. Filter for **unhappy** customers  
+   ```sql
+   SELECT text
+   FROM reviews
+   WHERE AI_FILTER(
+     PROMPT('Is the reviewer unhappy? {0}', text)
+   );
+   ```
+
+---
+
+## 🔧 Next Steps
+
+- Explore other AISQL functions:
+  - `AI_CLASSIFY` for multi-class labeling  
+  - `AI_SUMMARIZE_AGG` for document summarization  
+  - `AI_EMBED` for similarity searches  
+- Tweak model parameters (`temperature`, `max_tokens`) to control creativity and response length  
+- Combine AI functions with standard SQL logic to build richer pipelines  
+
+---
+
+## 📚 Resources
+
+- Official AISQL docs:  
+  https://docs.snowflake.com/en/user-guide/snowflake-cortex/aisql  
+- Model reference guide:  
+  https://docs.snowflake.com/en/user-guide/azure-llm-model-catalog  
+- Snowflake community examples:  
+  https://github.com/Snowflake-Labs  
+
+---
+
+You’re all set! Run these snippets in your Snowflake worksheet and start experimenting with AI-powered SQL today. 😊  
