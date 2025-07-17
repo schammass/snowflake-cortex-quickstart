@@ -1,4 +1,4 @@
-# 🧠 Getting Started with Cortex
+# 🧠 Getting Started with Snowflake AI
 
 Build a conversational analytics app using Snowflake's **Cortex Analyst**, enabling users to query structured data with natural language.
 
